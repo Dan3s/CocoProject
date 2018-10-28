@@ -8,24 +8,29 @@ public class Saldo {
 	private double valorUnitario;
 	private double valorTotal;
 	
-	public Saldo(int cantidad, double valorUnitario, double valorTotal) {
+	public Saldo(int cantidad, double valorUnitario) {
 		
 		this.cantidad = cantidad;
 		this.valorUnitario = valorUnitario;
-		this.valorTotal = valorTotal;
+		this.valorTotal = cantidad*valorUnitario;
 	}
 	
-	public void disminuirSaldo(int cantidad)  {
+	public void disminuirSaldo(int cantidad) throws AccionInvalidaException {
 		if(cantidad > this.cantidad) {
-//			throw new AccionInvalidaException();
-		}else {
-			this.cantidad-=cantidad;
+			throw new AccionInvalidaException("No hay suficientes unidades en el inventario para deolver");
 		}
+		this.cantidad-=cantidad;
+		calcularValorTotal();
+	}
+	
+	public void aumentarSaldo(int cantidad) {
+		this.cantidad+=cantidad;
+		calcularValorTotal();
 	}
 
-	public double calcularValorTotal() {
+	public void calcularValorTotal() {
 		
-		return cantidad*valorUnitario;
+		valorTotal= cantidad*valorUnitario;
 	}
 	
 	public double calcularValorUnitario() {
@@ -39,6 +44,7 @@ public class Saldo {
 
 	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
+		calcularValorTotal();
 	}
 
 	public double getValorUnitario() {

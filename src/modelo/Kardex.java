@@ -2,6 +2,8 @@ package modelo;
 
 import java.util.ArrayList;
 
+import excepciones.AccionInvalidaException;
+
 public class Kardex {
 	
 	public final static boolean PEPS = true;
@@ -9,26 +11,69 @@ public class Kardex {
 	ArrayList<Concepto> conceptos;
 	boolean tipo;
 
-//	private ArrayList<Entrada> entradas;
-//	private ArrayList<Salida> salidas;
-//	private ArrayList<Saldo> saldo;
+	private ArrayList<Entrada> entradas;
+	private ArrayList<Salida> salidas;
 	
-	public Kardex() {
+	public Kardex(boolean tipo) {
+		this.tipo = tipo;
 		
+		/**
+		 * Atributo para PEPS
+		 */
 		conceptos = new ArrayList<Concepto>();
 		
+		/**
+		 * Atributos para PP
+		 */
 		entradas = new ArrayList<Entrada>();
 		salidas = new ArrayList<Salida>();
-		saldo = new ArrayList<Saldo>();
+		
 	}
+	//-----------------------
+	//Metodos para PEPS
+	//-----------------------
 	
-	public void nuevoConcepto(String nombre, int cantidad, double valorUnitario) {
+	public void saldoInicial(int cantidad, double valorxUnidad) {
+		conceptos.add(new Concepto("Saldo inicial", 'i', new ArrayList<Saldo>()));
+		conceptos.get(0).agregarEntrada(cantidad, valorxUnidad);
 		
 	}
 	
-	public void devolucion(String nombre) {
-		
+	/**
+	 * Lista de los ultimos saldos del ultimos concepto
+	 * @return retorna los ultimos saldos en ser modificados por el ultimo
+	 * concepto del Kardex
+	 */
+	public ArrayList<Saldo> listaSaldos(){
+		return darUltimoConcepto().saldos;
 	}
+	
+	
+	public void nuevoConceptoPEPS(String nombre, char tipo) {
+		conceptos.add(new Concepto(nombre, tipo, listaSaldos()));
+	}
+	
+	public void entradaPEPS(int cantidad, double valorUnitario) {
+		darUltimoConcepto().agregarEntrada(cantidad, valorUnitario);
+	}
+	
+	public ArrayList<String> salidaPEPS(int cantidad) throws AccionInvalidaException{
+		return darUltimoConcepto().agregarSalida(cantidad);
+	}
+	
+	public void devolucionPEPS(int cantidad, double valorUnitario) throws AccionInvalidaException {
+		darUltimoConcepto().devolucion(cantidad, valorUnitario);
+	}
+	
+	public Concepto darUltimoConcepto() {
+		return conceptos.get(conceptos.size()-1);
+	}
+	
+
+	
+	//-------------------------------------------------
+	// Métodos para versión promedio ponderado
+	//-------------------------------------------------
 	
 	public void agregarEntrada(int cantidad, double valorUnitario, double valorTotal) {
 		
@@ -40,9 +85,6 @@ public class Kardex {
 		salidas.add(new Salida(cantidad, valorUnitario, valorTotal));
 	}
 	
-	//-------------------------------------------------
-	// Métodos para versión promedio ponderado
-	//-------------------------------------------------
 	public int calcularSaldoCantidadPP() {
 		
 		int cantidad = 0;
@@ -80,32 +122,6 @@ public class Kardex {
 	public double calcularSaldoUnitarioPP() {
 		
 		return calcularSaldoTotalPP()/calcularSaldoCantidadPP();
-	}
-	
-	//-------------------------------------------------------
-	// Metodos para versión PEPS
-	//-------------------------------------------------------
-	
-	public void agregarSaldoInicial(int cantidad, double valorUnitario, double valorTotal) {
-		saldo.add(new Saldo(cantidad, valorUnitario, valorTotal));
-	}
-	
-	public void devolucionEnCompra(int cantidad, double valorUnitario, double valorTotal) {
-		for (int i = 0; i < saldo.size(); i++) {
-			if(valorUnitario == saldo.get(i).getValorUnitario()) {
-				
-			}
-		}
-	}
-	
-	public void agregarEntradaPEPS(int cantidad, double valorUnitario, double valorTotal) {
-		entradas.add(new Entrada(cantidad, valorUnitario, valorTotal));
-		saldo.add(new Saldo(cantidad, valorUnitario, valorTotal));
-	}
-	
-	public void agregarSalidaPEPS(int cantidad, double valorUnitario, double valorTotal) {
-		salidas.add(new Salida(cantidad, valorUnitario, valorTotal));
-		saldo.add(new Saldo(cantidad, valorUnitario, valorTotal));
 	}
 	
 	
