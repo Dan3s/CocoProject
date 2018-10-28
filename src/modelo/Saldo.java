@@ -15,6 +15,11 @@ public class Saldo {
 		this.valorTotal = cantidad*valorUnitario;
 	}
 	
+	@Override
+	public String toString() {
+		return ""+cantidad+"-"+valorUnitario+"-"+valorTotal;
+	}
+	
 	public void disminuirSaldo(int cantidad) throws AccionInvalidaException {
 		if(cantidad > this.cantidad) {
 			throw new AccionInvalidaException("No hay suficientes unidades en el inventario para deolver");
